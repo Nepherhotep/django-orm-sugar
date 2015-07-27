@@ -70,6 +70,9 @@ class Sugar(object):
         return self.__name
 
 
+# creating shortcut
+S = Sugar()
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
