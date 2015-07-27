@@ -1,6 +1,8 @@
 # Django ORM Sugar
 Sugar library to simplify Django querying
 
+## Overview 
+
 S - Django ORM Sugar
 
 This library tries to replace calls like:
