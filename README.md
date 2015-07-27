@@ -79,7 +79,7 @@ in_exc_range() helper, which will perform exclusive range filtering.
   
 Step 1. Extend SugarQueryHelper class:
 ```python
-from django_orm_sugar import SugarQ
+from django_orm_sugar import SugarQueryHelper
 
 class RangedQueryHelper(SugarQueryHelper):
     pass
