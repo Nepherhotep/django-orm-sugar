@@ -1,16 +1,20 @@
-# django_orm_sugar
+# Django ORM Sugar
 Sugar library to simplify Django querying
 
 S - Django ORM Sugar
 
-    >>> from django_orm_sugar import S
-    >>> S.username.get_query_param()
-    'username'
+This library tries to replace calls like:
     
-    >>> S.user.username.get_query_param()
-    'user__username'
+    >>> SomeModel.objects.filter(user__profile__common_bucket__seq_count__gte=7)
+    
+With more pythonic syntax
 
-Usage:
+    >>> SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
+    
+Not much shorter, but much more readable.
+
+
+## Queries
 
     >>> S.user.username == 'Bender Rodriguez'
     <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
