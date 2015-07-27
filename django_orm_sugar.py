@@ -15,8 +15,8 @@ class SugarQ(object):
     'user__username'
 
     Typical usage:
-    >>> SugarQ().user.username == 'John Smith'
-    <Q: (AND: ('user__username__exact', 'John Smith'))>
+    >>> SugarQ().user.username == 'Bender Rodriguez'
+    <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
 
     """
     def __init__(self, *args, **kwargs):
@@ -28,8 +28,8 @@ class SugarQ(object):
 
     def __eq__(self, value):
         """
-        >>> SugarQ().user.username == 'John Smith'
-        <Q: (AND: ('user__username__exact', 'John Smith'))>
+        >>> SugarQ().user.username == 'Bender Rodriguez'
+        <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
         return self.exact(value)
 
@@ -61,8 +61,19 @@ class SugarQ(object):
         """
         return Q(**{'{}__lte'.format(self.get_query_param()): value})
 
+    def isnull(self, value):
+        """
+        Filter by null (or not-null) fields
+
+        >>> SugarQ().user.favorite_movie.isnull(True)
+        <Q: (AND: ('user__favorite_movie__isnull', True))>
+        """
+        return Q(**{'{}__isnull'.format(self.get_query_param()): value})
+
     def in_list(self, lst):
         """
+        Filter by fields matching a given list
+
         >>> SugarQ().user.id.in_list([1, 2, 3])
         <Q: (AND: ('user__id__in', [1, 2, 3]))>
         """
@@ -77,29 +88,29 @@ class SugarQ(object):
 
     def iexact(self, value):
         """
-        >>> SugarQ().user.username.iexact('John Smith')
-        <Q: (AND: ('user__username__iexact', 'John Smith'))>
+        >>> SugarQ().user.username.iexact('Bender Rodriguez')
+        <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
         """
         return Q(**{'{}__iexact'.format(self.get_query_param()): value})
 
     def exact(self, value):
         """
-        >>> SugarQ().user.username.exact('John Smith')
-        <Q: (AND: ('user__username__exact', 'John Smith'))>
+        >>> SugarQ().user.username.exact('Bender Rodriguez')
+        <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
         return Q(**{'{}__exact'.format(self.get_query_param()): value})
 
     def contains(self, s):
         """
-        >>> SugarQ().user.username.contains('Smith')
-        <Q: (AND: ('user__username__contains', 'Smith'))>
+        >>> SugarQ().user.username.contains('Rodriguez')
+        <Q: (AND: ('user__username__contains', 'Rodriguez'))>
         """
         return Q(**{'{}__contains'.format(self.get_query_param()): s})
 
     def icontains(self, s):
         """
-        >>> SugarQ().user.username.icontains('smith')
-        <Q: (AND: ('user__username__icontains', 'smith'))>
+        >>> SugarQ().user.username.icontains('Rodriguez')
+        <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
         """
         return Q(**{'{}__icontains'.format(self.get_query_param()): s})
 
