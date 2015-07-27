@@ -82,9 +82,9 @@ class SugarQ(object):
     def in_range(self, min_value, max_value):
         """
         >>> SugarQ().user.id.in_range(7, 10)
-        <Q: (AND: ('user__id__lt', 7), ('user__id__gt', 10))>
+        <Q: (AND: ('user__id__lte', 7), ('user__id__gte', 10))>
         """
-        return (self < min_value) & (self > max_value)
+        return (self <= min_value) & (self >= max_value)
 
     def iexact(self, value):
         """
