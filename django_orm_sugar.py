@@ -62,18 +62,45 @@ class SugarQ(object):
         return Q(**{'{}__lte'.format(self.get_query_param()): value})
 
     def in_list(self, lst):
+        """
+        >>> SugarQ().user.id.in_list([1, 2, 3])
+        <Q: (AND: ('user__id__in', [1, 2, 3]))>
+        """
         return Q(**{'{}__in'.format(self.get_query_param()): lst})
 
-    def iexact(self, ):
-        pass
+    def in_range(self, min_value, max_value):
+        """
+        >>> SugarQ().user.id.in_range(7, 10)
+        <Q: (AND: ('user__id__lt', 7), ('user__id__gt', 10))>
+        """
+        return (self < min_value) & (self > max_value)
+
+    def iexact(self, value):
+        """
+        >>> SugarQ().user.username.iexact('John Smith')
+        <Q: (AND: ('user__username__iexact', 'John Smith'))>
+        """
+        return Q(**{'{}__iexact'.format(self.get_query_param()): value})
 
     def exact(self, value):
+        """
+        >>> SugarQ().user.username.exact('John Smith')
+        <Q: (AND: ('user__username__exact', 'John Smith'))>
+        """
         return Q(**{'{}__exact'.format(self.get_query_param()): value})
 
     def contains(self, s):
+        """
+        >>> SugarQ().user.username.contains('Smith')
+        <Q: (AND: ('user__username__contains', 'Smith'))>
+        """
         return Q(**{'{}__contains'.format(self.get_query_param()): s})
 
     def icontains(self, s):
+        """
+        >>> SugarQ().user.username.icontains('smith')
+        <Q: (AND: ('user__username__icontains', 'smith'))>
+        """
         return Q(**{'{}__icontains'.format(self.get_query_param()): s})
 
     def get_query_param(self):
