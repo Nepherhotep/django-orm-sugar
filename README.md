@@ -7,12 +7,14 @@ S - Django ORM Sugar
 
 This library tries to replace calls like:
 ```python     
->>> SomeModel.objects.filter(user__profile__common_bucket__seq_count__gte=7)
+SomeModel.objects.filter(user__profile__common_bucket__seq_count__gte=7)
 ```
     
 With more pythonic syntax
 ```python
->>> SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
+from django_orm_sugar import S
+
+SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
 ```
       
 Not much shorter, but much more readable.
