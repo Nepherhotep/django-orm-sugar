@@ -76,15 +76,16 @@ Step 1. Extend SugarQueryHelper class:
         pass
 
 Step 2. Create Helper Method
-
-    class RangedQueryHelper(SugarQueryHelper):
-        def in_exc_range(self, min_value, max_value):
-            """
-            Unlike existing in_range method, filtering will be performed
-            excluding initial values. In other words - we will use "<" and ">"
-            comparison instead of "<=" and ">="
-            """
-            return (self < min_value) & (self > max_value)
+```python
+class RangedQueryHelper(SugarQueryHelper):
+    def in_exc_range(self, min_value, max_value):
+        """
+        Unlike existing in_range method, filtering will be performed
+        excluding initial values. In other words - we will use "<" and ">"
+        comparison instead of "<=" and ">="
+        """
+        return (self < min_value) & (self > max_value)
+```
 
 Step 3. Initialize Helper Instance
 
