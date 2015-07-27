@@ -61,3 +61,40 @@ Common Django filter shortcuts
     
     >>> S.user.username.icontains('Rodriguez')
     Q(user__username__icontains='Rodriguez')
+
+
+## Extending
+
+You can extend helper with your own methods. Let's say you need to create in_exc_range() helper,
+  which will perform exclusive range filtering.
+  
+
+1. Extend SugarQueryHelper class:
+
+    from django_orm_sugar import SugarQ
+
+    class RangedQueryHelper(SugarQueryHelper):
+        pass
+        
+        
+2. Create Helper Method
+
+    class RangedQueryHelper(SugarQueryHelper):
+        def in_exc_range(self, min_value, max_value):
+            """
+            Unlike existing in_range method, filtering will be performed excluding initial values.
+            In other words - we will use "<" and ">" comparison instead of "<=" and ">="
+            """
+            return (self < min_value) & (self > max_value)
+            
+            
+3. Initialize Helper Instance
+
+    S = RangedQueryHelper()  # can be done whether in function or module level
+    
+    
+4. Now you can use it in your code
+
+    >>> S.registration_date.in_exc_range(from_date, to_date)
+    Q(registration_date__gt=from_date) & Q(registration_date__lt=to_date)
+    
