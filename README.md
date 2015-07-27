@@ -65,8 +65,8 @@ Common Django filter shortcuts
 
 ## Extending
 
-You can extend helper with your own methods. Let's say you need to create in_exc_range() helper,
-  which will perform exclusive range filtering.
+You can extend helper with your own methods. Let's say you need to create
+in_exc_range() helper, which will perform exclusive range filtering.
   
 Step 1. Extend SugarQueryHelper class:
 
@@ -80,8 +80,9 @@ Step 2. Create Helper Method
     class RangedQueryHelper(SugarQueryHelper):
         def in_exc_range(self, min_value, max_value):
             """
-            Unlike existing in_range method, filtering will be performed excluding initial values.
-            In other words - we will use "<" and ">" comparison instead of "<=" and ">="
+            Unlike existing in_range method, filtering will be performed
+            excluding initial values. In other words - we will use "<" and ">"
+            comparison instead of "<=" and ">="
             """
             return (self < min_value) & (self > max_value)
 
