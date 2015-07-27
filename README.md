@@ -6,17 +6,18 @@ Sugar library to simplify Django querying
 S - Django ORM Sugar
 
 This library tries to replace calls like:
-    
+     
     >>> SomeModel.objects.filter(user__profile__common_bucket__seq_count__gte=7)
     
 With more pythonic syntax
 
     >>> SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
-    
+      
 Not much shorter, but much more readable.
 
 
 ## Queries
+General comparison actions generate related Q objects:  
 
     >>> S.user.username == 'Bender Rodriguez'
     Q(user__username='Bender Rodriguez')
@@ -42,14 +43,14 @@ Filter by fields matching a given list
 
     >>> S.user.id.in_list([1, 2, 3])
     Q(user__id__in=[1, 2, 3])
-    
+   
 Filter by fields in range
-    
+  
     >>> S.user.id.in_range(7, 10)
     Q(user__id__lte=7) & Q(user__id__gte=10)
     
 Common Django filter shortcuts
-    
+   
     >>> S.user.username.iexact('Bender Rodriguez')
     Q(user__username__iexact='Bender Rodriguez')
     
@@ -62,22 +63,19 @@ Common Django filter shortcuts
     >>> S.user.username.icontains('Rodriguez')
     Q(user__username__icontains='Rodriguez')
 
-
 ## Extending
 
 You can extend helper with your own methods. Let's say you need to create in_exc_range() helper,
   which will perform exclusive range filtering.
   
-
-1. Extend SugarQueryHelper class:
+Step 1. Extend SugarQueryHelper class:
 
     from django_orm_sugar import SugarQ
 
     class RangedQueryHelper(SugarQueryHelper):
         pass
 
-
-2. Create Helper Method
+Step 2. Create Helper Method
 
     class RangedQueryHelper(SugarQueryHelper):
         def in_exc_range(self, min_value, max_value):
@@ -87,13 +85,11 @@ You can extend helper with your own methods. Let's say you need to create in_exc
             """
             return (self < min_value) & (self > max_value)
 
-
-3. Initialize Helper Instance
+Step 3. Initialize Helper Instance
 
     S = RangedQueryHelper()  # can be done whether in function or module level
 
-
-4. Now you can use it in your code
+Step 4. Now you can use it in your code
 
     >>> S.registration_date.in_exc_range(from_date, to_date)
     Q(registration_date__gt=from_date) & Q(registration_date__lt=to_date)
