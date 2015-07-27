@@ -3,19 +3,19 @@ from django.db.models import Q
 __author__ = 'Alexey Zankevich'
 
 
-class Sugar(object):
+class SugarQ(object):
     """
     S - Django ORM Sugar
 
-    >>> s = Sugar()
+    >>> s = SugarQ()
     >>> s.username.get_query_param()
     'username'
 
-    >>> Sugar().user.username.get_query_param()
+    >>> SugarQ().user.username.get_query_param()
     'user__username'
 
     Typical usage:
-    >>> Sugar().user.username == 'John Smith'
+    >>> SugarQ().user.username == 'John Smith'
     <Q: (AND: ('user__username__exact', 'John Smith'))>
 
     """
@@ -24,28 +24,42 @@ class Sugar(object):
         self.__name = kwargs.pop('__name', '')
 
     def __getattr__(self, item):
-        return Sugar(__name=item, __parent=self)
+        return SugarQ(__name=item, __parent=self)
 
     def __eq__(self, value):
         """
-        >>> Sugar().user.username == 'John Smith'
+        >>> SugarQ().user.username == 'John Smith'
         <Q: (AND: ('user__username__exact', 'John Smith'))>
         """
         return self.exact(value)
 
     def __gt__(self, value):
         """
-        >>> Sugar().user.age > 7
+        >>> SugarQ().user.age > 7
         <Q: (AND: ('user__age__gt', 7))>
         """
         return Q(**{'{}__gt'.format(self.get_query_param()): value})
 
     def __ge__(self, value):
         """
-        >>> Sugar().user.age >= 7
+        >>> SugarQ().user.age >= 7
         <Q: (AND: ('user__age__gte', 7))>
         """
         return Q(**{'{}__gte'.format(self.get_query_param()): value})
+
+    def __lt__(self, value):
+        """
+        >>> SugarQ().user.age < 7
+        <Q: (AND: ('user__age__lt', 7))>
+        """
+        return Q(**{'{}__lt'.format(self.get_query_param()): value})
+
+    def __le__(self, value):
+        """
+        >>> SugarQ().user.age <= 7
+        <Q: (AND: ('user__age__lte', 7))>
+        """
+        return Q(**{'{}__lte'.format(self.get_query_param()): value})
 
     def in_list(self, lst):
         return Q(**{'{}__in'.format(self.get_query_param()): lst})
@@ -71,7 +85,7 @@ class Sugar(object):
 
 
 # creating shortcut
-S = Sugar()
+S = SugarQ()
 
 if __name__ == "__main__":
     import doctest
