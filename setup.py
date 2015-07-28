@@ -6,7 +6,7 @@ __author__ = 'Alexey Zankevich'
 setup(
     name="django_orm_sugar",
     version="0.1",
-    packages=find_packages(),
+    py_modules=['django_orm_sugar'],
     author="Alexey Zankevich",
     author_email="alex.zankevich@gmail.com",
     description="Django ORM sugar library to simplify querying",
