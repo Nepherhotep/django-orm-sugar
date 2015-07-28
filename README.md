@@ -20,6 +20,20 @@ SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
 Not much shorter, but much more readable.
 
 
+## Installation
+
+```
+pip install django-orm-sugar
+```
+
+or 
+
+```
+git clone https://github.com/Nepherhotep/django_orm_sugar
+cd django_orm_sugar
+python setup.py install
+```
+
 ## Queries
 General comparison actions generate related Q objects:  
 ```python
