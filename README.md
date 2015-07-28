@@ -16,8 +16,17 @@ from django_orm_sugar import S
 
 SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
 ```
-      
-Not much shorter, but much more readable.
+
+It makes it easy to follow DRY principles when working with long query paths
+```python
+from django_orm_sugar import S
+
+# saving reference for SugarQueryHelper
+seq_count = S.user.profile.common_bucket.seq_count
+
+# using it multiple times - in filter and order_by calls
+SomeModel.objects.filter(seq_count >= 7).order_by(seq_count.get_path())
+```
 
 
 ## Installation
@@ -84,6 +93,13 @@ Q(user__username__contains='Rodriguez')
 
 >>> S.user.username.icontains('Rodriguez')
 Q(user__username__icontains='Rodriguez')
+```
+
+Get query path - useful for order_by, select_related and other calls,
+which expect query path as string
+```python
+>>> S.user.username.get_path()
+'user__username'
 ```
 
 ## Extending
