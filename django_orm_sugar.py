@@ -8,10 +8,10 @@ class SugarQueryHelper(object):
     S - Django ORM Sugar
 
     >>> s = SugarQueryHelper()
-    >>> s.username.get_query_param()
+    >>> s.username.get_path()
     'username'
 
-    >>> SugarQueryHelper().user.username.get_query_param()
+    >>> SugarQueryHelper().user.username.get_path()
     'user__username'
 
     Typical usage:
@@ -48,28 +48,28 @@ class SugarQueryHelper(object):
         >>> SugarQueryHelper().user.age > 7
         <Q: (AND: ('user__age__gt', 7))>
         """
-        return Q(**{'{}__gt'.format(self.get_query_param()): value})
+        return Q(**{'{}__gt'.format(self.get_path()): value})
 
     def __ge__(self, value):
         """
         >>> SugarQueryHelper().user.age >= 7
         <Q: (AND: ('user__age__gte', 7))>
         """
-        return Q(**{'{}__gte'.format(self.get_query_param()): value})
+        return Q(**{'{}__gte'.format(self.get_path()): value})
 
     def __lt__(self, value):
         """
         >>> SugarQueryHelper().user.age < 7
         <Q: (AND: ('user__age__lt', 7))>
         """
-        return Q(**{'{}__lt'.format(self.get_query_param()): value})
+        return Q(**{'{}__lt'.format(self.get_path()): value})
 
     def __le__(self, value):
         """
         >>> SugarQueryHelper().user.age <= 7
         <Q: (AND: ('user__age__lte', 7))>
         """
-        return Q(**{'{}__lte'.format(self.get_query_param()): value})
+        return Q(**{'{}__lte'.format(self.get_path()): value})
 
     def is_null(self, value=True):
         """
@@ -79,7 +79,7 @@ class SugarQueryHelper(object):
         <Q: (AND: ('user__favorite_movie__isnull', True))>
 
         """
-        return Q(**{'{}__isnull'.format(self.get_query_param()): value})
+        return Q(**{'{}__isnull'.format(self.get_path()): value})
 
     def is_not_null(self):
         """
@@ -97,7 +97,7 @@ class SugarQueryHelper(object):
         >>> SugarQueryHelper().user.id.in_list([1, 2, 3])
         <Q: (AND: ('user__id__in', [1, 2, 3]))>
         """
-        return Q(**{'{}__in'.format(self.get_query_param()): lst})
+        return Q(**{'{}__in'.format(self.get_path()): lst})
 
     def in_range(self, min_value, max_value):
         """
@@ -111,32 +111,32 @@ class SugarQueryHelper(object):
         >>> SugarQueryHelper().user.username.iexact('Bender Rodriguez')
         <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
         """
-        return Q(**{'{}__iexact'.format(self.get_query_param()): value})
+        return Q(**{'{}__iexact'.format(self.get_path()): value})
 
     def exact(self, value):
         """
         >>> SugarQueryHelper().user.username.exact('Bender Rodriguez')
         <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
-        return Q(**{'{}__exact'.format(self.get_query_param()): value})
+        return Q(**{'{}__exact'.format(self.get_path()): value})
 
     def contains(self, s):
         """
         >>> SugarQueryHelper().user.username.contains('Rodriguez')
         <Q: (AND: ('user__username__contains', 'Rodriguez'))>
         """
-        return Q(**{'{}__contains'.format(self.get_query_param()): s})
+        return Q(**{'{}__contains'.format(self.get_path()): s})
 
     def icontains(self, s):
         """
         >>> SugarQueryHelper().user.username.icontains('Rodriguez')
         <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
         """
-        return Q(**{'{}__icontains'.format(self.get_query_param()): s})
+        return Q(**{'{}__icontains'.format(self.get_path()): s})
 
-    def get_query_param(self):
+    def get_path(self):
         if self.__parent:
-            parent_param = self.__parent.get_query_param()
+            parent_param = self.__parent.get_path()
             if parent_param:
                 return '__'.join([parent_param, self.__name])
         return self.__name
