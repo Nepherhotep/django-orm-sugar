@@ -10,6 +10,7 @@ setup(
     author="Alexey Zankevich",
     author_email="alex.zankevich@gmail.com",
     description="Django ORM sugar library to simplify querying",
+    keywords=['Django', 'ORM', 'util', 'sugar'],
     license="MIT",
 )
 
