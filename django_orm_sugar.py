@@ -135,6 +135,13 @@ class SugarQueryHelper(object):
         return Q(**{'{}__icontains'.format(self.get_path()): s})
 
     def get_path(self):
+        """
+        Get Django-compatible query path
+
+        >>> SugarQueryHelper().user.username.get_path()
+        'user__username'
+
+        """
         if self.__parent:
             parent_param = self.__parent.get_path()
             if parent_param:
