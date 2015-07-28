@@ -33,6 +33,13 @@ class SugarQueryHelper(object):
         """
         return self.exact(value)
 
+    def __ne__(self, value):
+        """
+        >>> SugarQueryHelper().user.username != 'Bender Rodriguez'
+        <Q: (NOT (AND: ('user__username__exact', 'Bender Rodriguez')))>
+        """
+        return ~self.exact(value)
+
     def __gt__(self, value):
         """
         >>> SugarQueryHelper().user.age > 7
