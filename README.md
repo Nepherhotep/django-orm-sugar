@@ -41,7 +41,7 @@ Q(user__age__lte=7)
 
 Filter by null (or not-null) fields
 ```python
->>> S.user.favorite_movie.isnull(True)
+>>> S.user.favorite_movie.is_null()
 Q(user__favorite_movie__isnull=True)
 ```
 

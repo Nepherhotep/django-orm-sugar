@@ -24,6 +24,9 @@ class SugarQueryHelper(object):
         self.__name = kwargs.pop('__name', '')
 
     def __getattr__(self, item):
+        """
+        :return: SugarQueryHelper()
+        """
         return SugarQueryHelper(__name=item, __parent=self)
 
     def __eq__(self, value):
@@ -68,14 +71,24 @@ class SugarQueryHelper(object):
         """
         return Q(**{'{}__lte'.format(self.get_query_param()): value})
 
-    def isnull(self, value):
+    def is_null(self, value=True):
         """
         Filter by null (or not-null) fields
 
-        >>> SugarQueryHelper().user.favorite_movie.isnull(True)
+        >>> SugarQueryHelper().user.favorite_movie.is_null()
         <Q: (AND: ('user__favorite_movie__isnull', True))>
+
         """
         return Q(**{'{}__isnull'.format(self.get_query_param()): value})
+
+    def is_not_null(self):
+        """
+        Filter by not null (or not-null) fields
+
+        >>> SugarQueryHelper().user.favorite_movie.is_not_null()
+        <Q: (AND: ('user__favorite_movie__isnull', False))>
+        """
+        return self.is_null(False)
 
     def in_list(self, lst):
         """
