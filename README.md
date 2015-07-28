@@ -17,7 +17,7 @@ from django_orm_sugar import S
 SomeModel.objects.filter(S.user.profile.common_bucket.seq_count >= 7)
 ```
 
-It makes it easy to follow DRY principles when working with long query paths
+It gets easy to follow DRY principles when working with long query paths
 ```python
 from django_orm_sugar import S
 
