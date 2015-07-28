@@ -29,8 +29,8 @@ pip install django-orm-sugar
 or 
 
 ```
-git clone https://github.com/Nepherhotep/django_orm_sugar
-cd django_orm_sugar
+git clone https://github.com/Nepherhotep/django-orm-sugar
+cd django-orm-sugar
 python setup.py install
 ```
 
