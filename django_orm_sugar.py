@@ -36,6 +36,10 @@ class SugarQueryHelper(object):
     >>> SugarQueryHelper().user.username == 'Bender Rodriguez'
     <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
 
+    Allows to use hooks inside long paths:
+    >>> SugarQueryHelper().is_null.is_not_null.contains.icontains.exact.iexact.get_path()
+    'is_null__is_not_null__contains__icontains__exact__iexact'
+
     """
     def __init__(self, *args, **kwargs):
         self.__parent = kwargs.pop('__parent', None)
