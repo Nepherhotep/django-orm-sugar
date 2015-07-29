@@ -1,6 +1,24 @@
+import functools
 from django.db.models import Q
 
 __author__ = 'Alexey Zankevich'
+
+
+_REGISTERED_HOOKS = {}
+
+
+def register_hook(name):
+    """
+    Register hook method, which should be callable
+
+    :param name: a new lookup name (ex. "icontains", "exact")
+    :return: decorator
+    """
+    def decorator(fun):
+        _REGISTERED_HOOKS[name] = fun
+        return fun
+
+    return decorator
 
 
 class SugarQueryHelper(object):
@@ -71,7 +89,15 @@ class SugarQueryHelper(object):
         """
         return Q(**{'{}__lte'.format(self.get_path()): value})
 
-    def is_null(self, value=True):
+    def __call__(self, *args, **kwargs):
+        hook = _REGISTERED_HOOKS.get(self.__name)
+        if hook:
+            return hook(self, *args, **kwargs)
+        else:
+            raise NotImplementedError("Unknown lookup {}".format(self.__name))
+
+    @register_hook('is_null')
+    def _is_null(self, value=True):
         """
         Filter by null (or not-null) fields
 
@@ -81,7 +107,8 @@ class SugarQueryHelper(object):
         """
         return Q(**{'{}__isnull'.format(self.get_path()): value})
 
-    def is_not_null(self):
+    @register_hook('is_not_null')
+    def _is_not_null(self):
         """
         Filter by not null (or not-null) fields
 
@@ -90,7 +117,8 @@ class SugarQueryHelper(object):
         """
         return self.is_null(False)
 
-    def in_list(self, lst):
+    @register_hook('in_list')
+    def _in_list(self, lst):
         """
         Filter by fields matching a given list
 
@@ -99,42 +127,48 @@ class SugarQueryHelper(object):
         """
         return Q(**{'{}__in'.format(self.get_path()): lst})
 
-    def in_range(self, min_value, max_value):
+    @register_hook('in_range')
+    def _in_range(self, min_value, max_value):
         """
         >>> SugarQueryHelper().user.id.in_range(7, 10)
         <Q: (AND: ('user__id__lte', 7), ('user__id__gte', 10))>
         """
         return (self <= min_value) & (self >= max_value)
 
-    def iexact(self, value):
+    @register_hook('iexact')
+    def _iexact(self, value):
         """
         >>> SugarQueryHelper().user.username.iexact('Bender Rodriguez')
         <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
         """
         return Q(**{'{}__iexact'.format(self.get_path()): value})
 
-    def exact(self, value):
+    @register_hook('exact')
+    def _exact(self, value):
         """
         >>> SugarQueryHelper().user.username.exact('Bender Rodriguez')
         <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
         return Q(**{'{}__exact'.format(self.get_path()): value})
 
-    def contains(self, s):
+    @register_hook('contains')
+    def _contains(self, s):
         """
         >>> SugarQueryHelper().user.username.contains('Rodriguez')
         <Q: (AND: ('user__username__contains', 'Rodriguez'))>
         """
         return Q(**{'{}__contains'.format(self.get_path()): s})
 
-    def icontains(self, s):
+    @register_hook('icontains')
+    def _icontains(self, s):
         """
         >>> SugarQueryHelper().user.username.icontains('Rodriguez')
         <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
         """
         return Q(**{'{}__icontains'.format(self.get_path()): s})
 
-    def get_path(self):
+    @register_hook('get_path')
+    def _get_path(self):
         """
         Get Django-compatible query path
 
@@ -143,7 +177,7 @@ class SugarQueryHelper(object):
 
         """
         if self.__parent:
-            parent_param = self.__parent.get_path()
+            parent_param = self.__parent._get_path()
             if parent_param:
                 return '__'.join([parent_param, self.__name])
         return self.__name
