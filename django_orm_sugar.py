@@ -115,7 +115,7 @@ class SugarQueryHelper(object):
         >>> SugarQueryHelper().user.favorite_movie.is_not_null()
         <Q: (AND: ('user__favorite_movie__isnull', False))>
         """
-        return self.is_null(False)
+        return self._is_null(False)
 
     @register_hook('in_list')
     def _in_list(self, lst):
@@ -167,8 +167,7 @@ class SugarQueryHelper(object):
         """
         return Q(**{'{}__icontains'.format(self.get_path()): s})
 
-    @register_hook('get_path')
-    def _get_path(self):
+    def get_path(self, tail=True):
         """
         Get Django-compatible query path
 
@@ -176,11 +175,19 @@ class SugarQueryHelper(object):
         'user__username'
 
         """
+        parent_param = ''
         if self.__parent:
-            parent_param = self.__parent._get_path()
+            parent_param = self.__parent.get_path(tail=False)
+
+        if tail and (self.__name in _REGISTERED_HOOKS):
+            return parent_param
+
+        else:
             if parent_param:
                 return '__'.join([parent_param, self.__name])
-        return self.__name
+
+            else:
+                return self.__name
 
 
 # creating shortcut
