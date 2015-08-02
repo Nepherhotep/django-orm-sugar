@@ -158,7 +158,7 @@ class SugarQueryHelper(OldQ):
 
 
 # creating shortcut
-Q = SugarQueryHelper()
+Q = S = SugarQueryHelper()
 
 if __name__ == "__main__":
     import doctest
