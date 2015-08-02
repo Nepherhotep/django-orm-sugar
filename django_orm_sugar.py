@@ -5,7 +5,7 @@ __author__ = 'Alexey Zankevich'
 
 class SugarQueryHelper(OldQ):
     """
-    S - Django ORM Sugar
+    Usage:
 
     >>> Q.username.get_path()
     'username'
