@@ -3,7 +3,7 @@ from django.db.models import Q
 __author__ = 'Alexey Zankevich'
 
 
-class SugarQueryHelper(object):
+class SugarQueryHelper(Q):
     """
     S - Django ORM Sugar
 
@@ -20,14 +20,15 @@ class SugarQueryHelper(object):
 
     """
     def __init__(self, *args, **kwargs):
-        self.__parent = kwargs.pop('__parent', None)
-        self.__name = kwargs.pop('__name', '')
+        self._parent = kwargs.pop('_parent', None)
+        self._name = kwargs.pop('_name', '')
+        super(SugarQueryHelper, self).__init__(*args, **kwargs)
 
     def __getattr__(self, item):
         """
         :return: SugarQueryHelper()
         """
-        return SugarQueryHelper(__name=item, __parent=self)
+        return SugarQueryHelper(_name=item, _parent=self)
 
     def __eq__(self, value):
         """
@@ -142,11 +143,11 @@ class SugarQueryHelper(object):
         'user__username'
 
         """
-        if self.__parent:
-            parent_param = self.__parent.get_path()
+        if self._parent is not None:
+            parent_param = self._parent.get_path()
             if parent_param:
-                return '__'.join([parent_param, self.__name])
-        return self.__name
+                return '__'.join([parent_param, self._name])
+        return self._name
 
 
 # creating shortcut
