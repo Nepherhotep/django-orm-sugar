@@ -7,15 +7,14 @@ class SugarQueryHelper(OldQ):
     """
     S - Django ORM Sugar
 
-    >>> s = SugarQueryHelper()
-    >>> s.username.get_path()
+    >>> Q.username.get_path()
     'username'
 
-    >>> SugarQueryHelper().user.username.get_path()
+    >>> Q.user.username.get_path()
     'user__username'
 
     Typical usage:
-    >>> SugarQueryHelper().user.username == 'Bender Rodriguez'
+    >>> Q.user.username == 'Bender Rodriguez'
     <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
 
     """
@@ -74,8 +73,11 @@ class SugarQueryHelper(OldQ):
 
     def __call__(self, *args, **kwargs):
         """
+        Keep old-style Q usage
+
         >>> Q(user__age__lte=7)
         <Q: (AND: ('user__age__lte', 7))>
+
         """
         return OldQ(*args, **kwargs)
 
