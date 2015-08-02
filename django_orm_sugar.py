@@ -17,6 +17,10 @@ class SugarQueryHelper(OldQ):
     >>> Q.user.username == 'Bender Rodriguez'
     <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
 
+    The old-style usage is still available:
+    >>> Q(user__username='Bender')
+    <Q: (AND: ('user__username', 'Bender'))>
+
     """
     def __init__(self, *args, **kwargs):
         self._parent = kwargs.pop('_parent', None)
