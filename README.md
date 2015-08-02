@@ -19,7 +19,7 @@ SomeModel.objects.filter(Q.user.profile.common_bucket.seq_count >= 7)
 
 It gets easy to follow DRY principles when working with long query paths
 ```python
-from django_orm_sugar import S
+from django_orm_sugar import Q
 
 # saving reference for SugarQueryHelper
 seq_count = Q.user.profile.common_bucket.seq_count
@@ -28,19 +28,9 @@ seq_count = Q.user.profile.common_bucket.seq_count
 SomeModel.objects.filter(seq_count >= 7).order_by(seq_count.get_path())
 ```
 
-
-## Installation
-
-```
-pip install django-orm-sugar
-```
-
-or 
-
-```
-git clone https://github.com/Nepherhotep/django-orm-sugar
-cd django-orm-sugar
-python setup.py install
+It is still possible to create Q objects in the old style way:
+```python
+q = Q(user__profile__common_bucket__seq_count=1)
 ```
 
 ## Queries
