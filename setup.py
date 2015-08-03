@@ -5,7 +5,7 @@ __author__ = 'Alexey Zankevich'
 
 setup(
     name="django-orm-sugar",
-    version="0.1.3",
+    version="0.1.4",
     py_modules=['django_orm_sugar'],
     author="Alexey Zankevich",
     author_email="alex.zankevich@gmail.com",
