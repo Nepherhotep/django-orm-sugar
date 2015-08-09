@@ -142,12 +142,6 @@ class SugarQueryHelper(object):
         >>> SugarQueryHelper().user.username.get_path()
         'user__username'
 
-        >>> 'asdf'
-        should fail
-
-        >>> raise Exception()
-        asdf
-
         """
         if self.__parent:
             parent_param = self.__parent.get_path()
