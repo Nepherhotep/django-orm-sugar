@@ -1,3 +1,4 @@
+import sys
 from django.db.models import Q as OldQ
 
 __author__ = 'Alexey Zankevich'
@@ -168,4 +169,5 @@ Q = S = SugarQueryHelper()
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    test_results = doctest.testmod()
+    sys.exit(test_results[0])
