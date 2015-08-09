@@ -1,3 +1,4 @@
+import sys
 from django.db.models import Q
 
 __author__ = 'Alexey Zankevich'
@@ -144,6 +145,9 @@ class SugarQueryHelper(object):
         >>> 'asdf'
         should fail
 
+        >>> raise Exception()
+        asdf
+
         """
         if self.__parent:
             parent_param = self.__parent.get_path()
@@ -157,4 +161,5 @@ S = SugarQueryHelper()
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    test_results = doctest.testmod()
+    sys.exit(test_results[0])
