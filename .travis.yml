@@ -15,4 +15,5 @@ env:
   - DJANGO_VERSION=1.8
 
 # command to run tests
-script: django_orm_sugar.py
+script:
+  python django_orm_sugar.py
