@@ -1,7 +1,5 @@
-# Django ORM Sugar
+# Django ORM Sugar [![Build Status](https://travis-ci.org/Nepherhotep/django-orm-sugar.svg?branch=master)](https://travis-ci.org/Nepherhotep/django-orm-sugar)
 Sugar library to simplify Django querying
-
-Build testing status: [![Build Status](https://travis-ci.org/Nepherhotep/django-orm-sugar.svg?branch=master)](https://travis-ci.org/Nepherhotep/django-orm-sugar)
 
 ## Overview 
 
