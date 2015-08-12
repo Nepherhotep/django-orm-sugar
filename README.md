@@ -94,36 +94,29 @@ which expect query path as string
 
 ## Extending
 
-You can extend helper with your own methods. Let's say you need to create
+You can register your custom helpers. Let's say you need to create
 in_exc_range() helper, which will perform exclusive range filtering.
   
-Step 1. Extend QFactory class:
-```python
-from django_orm_sugar import QFactory
 
-class RangedQueryHelper(QFactory):
-    pass
+```python
+from django_orm_sugar import register_helper
+
+# write helper function and register it using special decorator
+@register_helper('in_exc_range')
+def exclusive_in_range_helper(query_path, min_value, max_value):
+    """
+    Unlike existing in_range method, filtering will be performed
+    excluding initial values. In other words - we will use "<" and ">"
+    comparison instead of "<=" and ">="
+    """
+    q_gt = Q(**{'{}__gt'.format(query_path): min_value})
+    q_lt = Q(**{'{}__lt'.format(query_path): max_value})
+    return q_gt & q_lt
 ```
 
-Step 2. Create Helper Method
+The actual function name doesn't matter, only passed name to decorator does.
+Now you can use newly registered helper:
 ```python
-class RangedQueryHelper(QFactory):
-    def in_exc_range(self, min_value, max_value):
-        """
-        Unlike existing in_range method, filtering will be performed
-        excluding initial values. In other words - we will use "<" and ">"
-        comparison instead of "<=" and ">="
-        """
-        return (self < min_value) & (self > max_value)
-```
-
-Step 3. Initialize Helper Instance
-```python
-    Q = RangedQueryHelper()  # can be done whether in function or module level
-```
-
-Step 4. Now you can use it in your code
-```python
->>> Q.registration_date.in_exc_range(from_date, to_date)
+>>> Q.user.registration_date.in_exc_range(from_date, to_date)
 Q(registration_date__gt=from_date) & Q(registration_date__lt=to_date)
 ```
