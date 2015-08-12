@@ -1,10 +1,10 @@
 import sys
-from django.db.models import Q as OldQ
+from django.db.models import Q as QNode
 
 __author__ = 'Alexey Zankevich'
 
 
-class SugarQueryHelper(OldQ):
+class QFactory(object):
     """
     Usage:
 
@@ -23,16 +23,15 @@ class SugarQueryHelper(OldQ):
     <Q: (AND: ('user__username', 'Bender'))>
 
     """
-    def __init__(self, *args, **kwargs):
-        self._parent = kwargs.pop('_parent', None)
-        self._name = kwargs.pop('_name', '')
-        super(SugarQueryHelper, self).__init__(*args, **kwargs)
+    def __init__(self, name='', parent=None):
+        self._name = name
+        self._parent = parent
 
     def __getattr__(self, item):
         """
-        :return: SugarQueryHelper()
+        :return: QFactory()
         """
-        return SugarQueryHelper(_name=item, _parent=self)
+        return QFactory(name=item, parent=self)
 
     def __eq__(self, value):
         """
@@ -43,38 +42,38 @@ class SugarQueryHelper(OldQ):
 
     def __ne__(self, value):
         """
-        >>> SugarQueryHelper().user.username != 'Bender Rodriguez'
+        >>> QFactory().user.username != 'Bender Rodriguez'
         <Q: (NOT (AND: ('user__username__exact', 'Bender Rodriguez')))>
         """
         return ~self.exact(value)
 
     def __gt__(self, value):
         """
-        >>> SugarQueryHelper().user.age > 7
+        >>> QFactory().user.age > 7
         <Q: (AND: ('user__age__gt', 7))>
         """
-        return OldQ(**{'{}__gt'.format(self.get_path()): value})
+        return QNode(**{'{}__gt'.format(self.get_path()): value})
 
     def __ge__(self, value):
         """
-        >>> SugarQueryHelper().user.age >= 7
+        >>> QFactory().user.age >= 7
         <Q: (AND: ('user__age__gte', 7))>
         """
-        return OldQ(**{'{}__gte'.format(self.get_path()): value})
+        return QNode(**{'{}__gte'.format(self.get_path()): value})
 
     def __lt__(self, value):
         """
-        >>> SugarQueryHelper().user.age < 7
+        >>> QFactory().user.age < 7
         <Q: (AND: ('user__age__lt', 7))>
         """
-        return OldQ(**{'{}__lt'.format(self.get_path()): value})
+        return QNode(**{'{}__lt'.format(self.get_path()): value})
 
     def __le__(self, value):
         """
-        >>> SugarQueryHelper().user.age <= 7
+        >>> QFactory().user.age <= 7
         <Q: (AND: ('user__age__lte', 7))>
         """
-        return OldQ(**{'{}__lte'.format(self.get_path()): value})
+        return QNode(**{'{}__lte'.format(self.get_path()): value})
 
     def __call__(self, *args, **kwargs):
         """
@@ -84,23 +83,23 @@ class SugarQueryHelper(OldQ):
         <Q: (AND: ('user__age__lte', 7))>
 
         """
-        return OldQ(*args, **kwargs)
+        return QNode(*args, **kwargs)
 
     def is_null(self, value=True):
         """
         Filter by null (or not-null) fields
 
-        >>> SugarQueryHelper().user.favorite_movie.is_null()
+        >>> QFactory().user.favorite_movie.is_null()
         <Q: (AND: ('user__favorite_movie__isnull', True))>
 
         """
-        return OldQ(**{'{}__isnull'.format(self.get_path()): value})
+        return QNode(**{'{}__isnull'.format(self.get_path()): value})
 
     def is_not_null(self):
         """
         Filter by not null (or not-null) fields
 
-        >>> SugarQueryHelper().user.favorite_movie.is_not_null()
+        >>> QFactory().user.favorite_movie.is_not_null()
         <Q: (AND: ('user__favorite_movie__isnull', False))>
         """
         return self.is_null(False)
@@ -109,51 +108,51 @@ class SugarQueryHelper(OldQ):
         """
         Filter by fields matching a given list
 
-        >>> SugarQueryHelper().user.id.in_list([1, 2, 3])
+        >>> QFactory().user.id.in_list([1, 2, 3])
         <Q: (AND: ('user__id__in', [1, 2, 3]))>
         """
-        return OldQ(**{'{}__in'.format(self.get_path()): lst})
+        return QNode(**{'{}__in'.format(self.get_path()): lst})
 
     def in_range(self, min_value, max_value):
         """
-        >>> SugarQueryHelper().user.id.in_range(7, 10)
+        >>> QFactory().user.id.in_range(7, 10)
         <Q: (AND: ('user__id__lte', 7), ('user__id__gte', 10))>
         """
         return (self <= min_value) & (self >= max_value)
 
     def iexact(self, value):
         """
-        >>> SugarQueryHelper().user.username.iexact('Bender Rodriguez')
+        >>> QFactory().user.username.iexact('Bender Rodriguez')
         <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
         """
-        return OldQ(**{'{}__iexact'.format(self.get_path()): value})
+        return QNode(**{'{}__iexact'.format(self.get_path()): value})
 
     def exact(self, value):
         """
-        >>> SugarQueryHelper().user.username.exact('Bender Rodriguez')
+        >>> QFactory().user.username.exact('Bender Rodriguez')
         <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
-        return OldQ(**{'{}__exact'.format(self.get_path()): value})
+        return QNode(**{'{}__exact'.format(self.get_path()): value})
 
     def contains(self, s):
         """
-        >>> SugarQueryHelper().user.username.contains('Rodriguez')
+        >>> QFactory().user.username.contains('Rodriguez')
         <Q: (AND: ('user__username__contains', 'Rodriguez'))>
         """
-        return OldQ(**{'{}__contains'.format(self.get_path()): s})
+        return QNode(**{'{}__contains'.format(self.get_path()): s})
 
     def icontains(self, s):
         """
-        >>> SugarQueryHelper().user.username.icontains('Rodriguez')
+        >>> QFactory().user.username.icontains('Rodriguez')
         <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
         """
-        return OldQ(**{'{}__icontains'.format(self.get_path()): s})
+        return QNode(**{'{}__icontains'.format(self.get_path()): s})
 
     def get_path(self):
         """
         Get Django-compatible query path
 
-        >>> SugarQueryHelper().user.username.get_path()
+        >>> QFactory().user.username.get_path()
         'user__username'
 
         """
@@ -165,7 +164,7 @@ class SugarQueryHelper(OldQ):
 
 
 # creating shortcut
-Q = S = SugarQueryHelper()
+Q = S = QFactory()
 
 if __name__ == "__main__":
     import doctest

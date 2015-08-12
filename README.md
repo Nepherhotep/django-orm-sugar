@@ -21,7 +21,7 @@ It gets easy to follow DRY principles when working with long query paths
 ```python
 from django_orm_sugar import Q
 
-# saving reference for SugarQueryHelper
+# saving reference for QFactory
 seq_count = Q.user.profile.common_bucket.seq_count
 
 # using it multiple times - in filter and order_by calls
@@ -97,17 +97,17 @@ which expect query path as string
 You can extend helper with your own methods. Let's say you need to create
 in_exc_range() helper, which will perform exclusive range filtering.
   
-Step 1. Extend SugarQueryHelper class:
+Step 1. Extend QFactory class:
 ```python
-from django_orm_sugar import SugarQueryHelper
+from django_orm_sugar import QFactory
 
-class RangedQueryHelper(SugarQueryHelper):
+class RangedQueryHelper(QFactory):
     pass
 ```
 
 Step 2. Create Helper Method
 ```python
-class RangedQueryHelper(SugarQueryHelper):
+class RangedQueryHelper(QFactory):
     def in_exc_range(self, min_value, max_value):
         """
         Unlike existing in_range method, filtering will be performed
