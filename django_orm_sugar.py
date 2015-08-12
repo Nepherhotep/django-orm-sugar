@@ -23,6 +23,8 @@ class QFactory(object):
     <Q: (AND: ('user__username', 'Bender'))>
 
     """
+    _helpers = {}
+
     def __init__(self, name='', parent=None):
         self._name = name
         self._parent = parent
@@ -77,13 +79,20 @@ class QFactory(object):
 
     def __call__(self, *args, **kwargs):
         """
-        Keep old-style Q usage
+        Lookup custom helpers, otherwise keep old-style Q usage
 
         >>> Q(user__age__lte=7)
         <Q: (AND: ('user__age__lte', 7))>
 
         """
-        return QNode(*args, **kwargs)
+        helper = self._helpers.get(self._name)
+        if helper:
+            if self._parent:
+                return helper(self._parent.get_path(), *args, **kwargs)
+            else:
+                raise RuntimeError("Queried field not specified")
+        else:
+            return QNode(*args, **kwargs)
 
     def is_null(self, value=True):
         """
@@ -161,6 +170,33 @@ class QFactory(object):
             if parent_param:
                 return '__'.join([parent_param, self._name])
         return self._name
+
+    @classmethod
+    def register_helper(cls, name, function):
+        cls._helpers[name] = function
+
+
+def register_helper(helper_name):
+    """
+    Register a custom helper.
+    Decorated function should take at least one param - queried path, which
+    will be passed automatically by QFactory.
+
+    Example:
+
+     >>> import datetime
+     >>> @register_helper('is_today')
+     ... def is_today_helper(path):
+     ...    return QNode(**{path: datetime.date.today()})
+
+     >>> Q.user.last_login_date.is_today()
+     <Q: (AND: ('user__last_login_date', datetime.date(2015, 8, 12)))>
+
+    """
+    def decorator(func):
+        QFactory.register_helper(helper_name, func)
+        return func
+    return decorator
 
 
 # creating shortcut
