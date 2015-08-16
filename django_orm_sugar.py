@@ -189,8 +189,9 @@ def register_helper(helper_name):
      ... def is_today_helper(path):
      ...    return QNode(**{path: datetime.date.today()})
 
-     >>> Q.user.last_login_date.is_today()
-     <Q: (AND: ('user__last_login_date', datetime.date(2015, 8, 12)))>
+     >>> q = Q.user.last_login_date.is_today()
+     >>> isinstance(q, QNode)
+     True
 
     """
     def decorator(func):
