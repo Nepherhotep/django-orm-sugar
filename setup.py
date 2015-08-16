@@ -3,11 +3,9 @@ from setuptools import setup, find_packages
 __author__ = 'Alexey Zankevich'
 
 
-LONG_DESCRIPTION = open('README.md').read()
-
 setup(
     name="django-orm-sugar",
-    version="0.2.1",
+    version="0.2.2",
     py_modules=['django_orm_sugar'],
     author="Alexey Zankevich",
     author_email="alex.zankevich@gmail.com",
