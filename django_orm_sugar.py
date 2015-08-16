@@ -1,92 +1,114 @@
 import sys
-from django.db.models import Q
+from django.db.models import Q as QNode
 
 __author__ = 'Alexey Zankevich'
 
 
-class SugarQueryHelper(object):
+class QFactory(object):
     """
-    S - Django ORM Sugar
+    Usage:
 
-    >>> s = SugarQueryHelper()
-    >>> s.username.get_path()
+    >>> Q.username.get_path()
     'username'
 
-    >>> SugarQueryHelper().user.username.get_path()
+    >>> Q.user.username.get_path()
     'user__username'
 
     Typical usage:
-    >>> SugarQueryHelper().user.username == 'Bender Rodriguez'
+    >>> Q.user.username == 'Bender Rodriguez'
     <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
 
+    The old-style usage is still available:
+    >>> Q(user__username='Bender')
+    <Q: (AND: ('user__username', 'Bender'))>
+
     """
-    def __init__(self, *args, **kwargs):
-        self.__parent = kwargs.pop('__parent', None)
-        self.__name = kwargs.pop('__name', '')
+    _helpers = {}
+
+    def __init__(self, name='', parent=None):
+        self._name = name
+        self._parent = parent
 
     def __getattr__(self, item):
         """
-        :return: SugarQueryHelper()
+        :return: QFactory()
         """
-        return SugarQueryHelper(__name=item, __parent=self)
+        return QFactory(name=item, parent=self)
 
     def __eq__(self, value):
         """
-        >>> SugarQueryHelper().user.username == 'Bender Rodriguez'
+        >>> Q.user.username == 'Bender Rodriguez'
         <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
         return self.exact(value)
 
     def __ne__(self, value):
         """
-        >>> SugarQueryHelper().user.username != 'Bender Rodriguez'
+        >>> QFactory().user.username != 'Bender Rodriguez'
         <Q: (NOT (AND: ('user__username__exact', 'Bender Rodriguez')))>
         """
         return ~self.exact(value)
 
     def __gt__(self, value):
         """
-        >>> SugarQueryHelper().user.age > 7
+        >>> QFactory().user.age > 7
         <Q: (AND: ('user__age__gt', 7))>
         """
-        return Q(**{'{}__gt'.format(self.get_path()): value})
+        return QNode(**{'{}__gt'.format(self.get_path()): value})
 
     def __ge__(self, value):
         """
-        >>> SugarQueryHelper().user.age >= 7
+        >>> QFactory().user.age >= 7
         <Q: (AND: ('user__age__gte', 7))>
         """
-        return Q(**{'{}__gte'.format(self.get_path()): value})
+        return QNode(**{'{}__gte'.format(self.get_path()): value})
 
     def __lt__(self, value):
         """
-        >>> SugarQueryHelper().user.age < 7
+        >>> QFactory().user.age < 7
         <Q: (AND: ('user__age__lt', 7))>
         """
-        return Q(**{'{}__lt'.format(self.get_path()): value})
+        return QNode(**{'{}__lt'.format(self.get_path()): value})
 
     def __le__(self, value):
         """
-        >>> SugarQueryHelper().user.age <= 7
+        >>> QFactory().user.age <= 7
         <Q: (AND: ('user__age__lte', 7))>
         """
-        return Q(**{'{}__lte'.format(self.get_path()): value})
+        return QNode(**{'{}__lte'.format(self.get_path()): value})
+
+    def __call__(self, *args, **kwargs):
+        """
+        Lookup custom helpers, otherwise keep old-style Q usage
+
+        >>> Q(user__age__lte=7)
+        <Q: (AND: ('user__age__lte', 7))>
+
+        """
+        helper = self._helpers.get(self._name)
+        if helper:
+            if self._parent:
+                return helper(self._parent.get_path(), *args, **kwargs)
+            else:
+                raise RuntimeError("Queried field not specified")
+        else:
+            return QNode(*args, **kwargs)
 
     def is_null(self, value=True):
         """
         Filter by null (or not-null) fields
 
-        >>> SugarQueryHelper().user.favorite_movie.is_null()
+        >>> QFactory().user.favorite_movie.is_null()
         <Q: (AND: ('user__favorite_movie__isnull', True))>
 
         """
-        return Q(**{'{}__isnull'.format(self.get_path()): value})
+        return QNode(**{'{}__isnull'.format(self.get_path()): value})
 
     def is_not_null(self):
         """
         Filter by not null (or not-null) fields
 
-        >>> SugarQueryHelper().user.favorite_movie.is_not_null()
+        >>> QFactory().user.favorite_movie.is_not_null()
         <Q: (AND: ('user__favorite_movie__isnull', False))>
         """
         return self.is_null(False)
@@ -95,63 +117,95 @@ class SugarQueryHelper(object):
         """
         Filter by fields matching a given list
 
-        >>> SugarQueryHelper().user.id.in_list([1, 2, 3])
+        >>> QFactory().user.id.in_list([1, 2, 3])
         <Q: (AND: ('user__id__in', [1, 2, 3]))>
         """
-        return Q(**{'{}__in'.format(self.get_path()): lst})
+        return QNode(**{'{}__in'.format(self.get_path()): lst})
 
     def in_range(self, min_value, max_value):
         """
-        >>> SugarQueryHelper().user.id.in_range(7, 10)
+        >>> QFactory().user.id.in_range(7, 10)
         <Q: (AND: ('user__id__lte', 7), ('user__id__gte', 10))>
         """
         return (self <= min_value) & (self >= max_value)
 
     def iexact(self, value):
         """
-        >>> SugarQueryHelper().user.username.iexact('Bender Rodriguez')
+        >>> QFactory().user.username.iexact('Bender Rodriguez')
         <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
         """
-        return Q(**{'{}__iexact'.format(self.get_path()): value})
+        return QNode(**{'{}__iexact'.format(self.get_path()): value})
 
     def exact(self, value):
         """
-        >>> SugarQueryHelper().user.username.exact('Bender Rodriguez')
+        >>> QFactory().user.username.exact('Bender Rodriguez')
         <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
         """
-        return Q(**{'{}__exact'.format(self.get_path()): value})
+        return QNode(**{'{}__exact'.format(self.get_path()): value})
 
     def contains(self, s):
         """
-        >>> SugarQueryHelper().user.username.contains('Rodriguez')
+        >>> QFactory().user.username.contains('Rodriguez')
         <Q: (AND: ('user__username__contains', 'Rodriguez'))>
         """
-        return Q(**{'{}__contains'.format(self.get_path()): s})
+        return QNode(**{'{}__contains'.format(self.get_path()): s})
 
     def icontains(self, s):
         """
-        >>> SugarQueryHelper().user.username.icontains('Rodriguez')
+        >>> QFactory().user.username.icontains('Rodriguez')
         <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
         """
-        return Q(**{'{}__icontains'.format(self.get_path()): s})
+        return QNode(**{'{}__icontains'.format(self.get_path()): s})
 
     def get_path(self):
         """
         Get Django-compatible query path
 
-        >>> SugarQueryHelper().user.username.get_path()
+        >>> QFactory().user.username.get_path()
         'user__username'
 
         """
-        if self.__parent:
-            parent_param = self.__parent.get_path()
+        if self._parent is not None:
+            parent_param = self._parent.get_path()
             if parent_param:
-                return '__'.join([parent_param, self.__name])
-        return self.__name
+                return '__'.join([parent_param, self._name])
+        return self._name
+
+    @classmethod
+    def register_helper(cls, name, function):
+        cls._helpers[name] = function
+
+
+def register_helper(helper_name):
+    """
+    Register a custom helper.
+    Decorated function should take at least one param - queried path, which
+    will be passed automatically by QFactory.
+
+    Example:
+
+     >>> import datetime
+     >>> @register_helper('is_today')
+     ... def is_today_helper(path):
+     ...    return QNode(**{path: datetime.date.today()})
+
+     >>> Q.user.last_login_date.is_today()
+     <Q: (AND: ('user__last_login_date', datetime.date(2015, 8, 12)))>
+
+    """
+    def decorator(func):
+        QFactory.register_helper(helper_name, func)
+        return func
+    return decorator
 
 
 # creating shortcut
-S = SugarQueryHelper()
+Q = QFactory()
+
+# make old-style references for backward compatibility, will be removed in next stable release
+S = Q
+SugarQueryHelper = QFactory
+
 
 if __name__ == "__main__":
     import doctest
