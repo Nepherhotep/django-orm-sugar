@@ -52,5 +52,4 @@ def exec_sql_template(model, template_name, params):
 
     c = Context(d)
     sql = t.render(c)
-    print(sql)
     return model.objects.raw(sql, params)
