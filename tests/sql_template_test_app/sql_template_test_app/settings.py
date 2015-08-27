@@ -78,8 +78,13 @@ WSGI_APPLICATION = 'sql_template_test_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'dj_orm_sugar',
+        'TEST_NAME': 'dj_orm_sugar_test',
+        'USER': 'dj_orm_sugar',
+        'PASSWORD': 'dj_orm_sugar',
+        'HOST': 'localhost',
+        'PORT': ''
     }
 }
 

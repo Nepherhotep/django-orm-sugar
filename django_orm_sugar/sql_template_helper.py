@@ -22,7 +22,7 @@ class ModelWrapper(object):
         return FieldWrapper(self._model, field_name)
 
     def __unicode__(self):
-        return "'{}'".format(self._model._meta.db_table)
+        return '"{}"'.format(self._model._meta.db_table)
 
 
 class FieldWrapper(object):
@@ -31,7 +31,7 @@ class FieldWrapper(object):
         self._field_name = field_name
 
     def __unicode__(self):
-        return "'{}'.'{}'".format(self._model._meta.db_table, self._field_name)
+        return '"{}"."{}"'.format(self._model._meta.db_table, self._field_name)
 
 
 def exec_sql_template(model, template_name, params):
