@@ -7,6 +7,7 @@ python:
 
 # command to install dependencies
 install:
+ - pip install nose
  - pip install -q Django==$DJANGO_VERSION
  - python setup.py -q install
 
@@ -19,4 +20,4 @@ env:
 
 # command to run tests
 script:
-  python django_orm_sugar.py
+  nosetests

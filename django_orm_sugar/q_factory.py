@@ -203,10 +203,6 @@ def register_helper(helper_name):
 # creating shortcut
 Q = QFactory()
 
-# make old-style references for backward compatibility, will be removed in next stable release
-S = Q
-SugarQueryHelper = QFactory
-
 
 if __name__ == "__main__":
     import doctest
