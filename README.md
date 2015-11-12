@@ -32,7 +32,7 @@ q = Q(user__profile__common_bucket__seq_count=1)
 ```
 
 ## Queries
-General comparison actions generate related Q objects:  
+General comparison operators generate related Q objects:  
 ```python
 >>> Q.user.username == 'Bender Rodriguez'
 Q(user__username='Bender Rodriguez')
