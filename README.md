@@ -3,9 +3,7 @@ Sugar library to simplify Django querying
 
 ## Overview 
 
-Django ORM Sugar
-
-The updated helper replaces calls like
+The updated Q object replaces calls like
 ```python     
 SomeModel.objects.filter(user__profile__common_bucket__seq_count__gte=7)
 ```
