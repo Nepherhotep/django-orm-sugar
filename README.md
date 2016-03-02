@@ -54,6 +54,9 @@ Filter by null (or not-null) fields
 ```python
 >>> Q.user.favorite_movie.is_null()
 Q(user__favorite_movie__isnull=True)
+
+>>> Q.user.favorite_movie.is_null(False)
+Q(user__favorite_movie__isnull=False)
 ```
 
 Filter by fields matching a given list
