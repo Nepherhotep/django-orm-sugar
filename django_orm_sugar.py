@@ -16,7 +16,7 @@ class QFactory(object):
 
     Typical usage:
     >>> Q.user.username == 'Bender Rodriguez'
-    <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
+    <Q: (AND: ('user__username', 'Bender Rodriguez'))>
 
     The old-style usage is still available:
     >>> Q(user__username='Bender')
@@ -35,19 +35,33 @@ class QFactory(object):
         """
         return QFactory(name=item, parent=self)
 
+    def __getitem__(self, item):
+        """
+        >>> Q.user.tags[0] == 'My Tag'
+        <Q: (AND: ('user__tags__0', 'My Tag'))>
+
+        >>> Q.user.tags[0:1] == "My Tag"
+        <Q: (AND: ('user__tags__0_1', 'My Tag'))>
+
+        """
+        if isinstance(item, slice):
+            return QFactory('{}_{}'.format(item.start, item.stop), self)
+        else:
+            return QFactory(str(item), self)
+
     def __eq__(self, value):
         """
         >>> Q.user.username == 'Bender Rodriguez'
-        <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
+        <Q: (AND: ('user__username', 'Bender Rodriguez'))>
         """
-        return self.exact(value)
+        return QNode(**{self.get_path(): value})
 
     def __ne__(self, value):
         """
         >>> QFactory().user.username != 'Bender Rodriguez'
-        <Q: (NOT (AND: ('user__username__exact', 'Bender Rodriguez')))>
+        <Q: (NOT (AND: ('user__username', 'Bender Rodriguez')))>
         """
-        return ~self.exact(value)
+        return ~QNode(**{self.get_path(): value})
 
     def __gt__(self, value):
         """
@@ -211,4 +225,5 @@ SugarQueryHelper = QFactory
 if __name__ == "__main__":
     import doctest
     test_results = doctest.testmod()
+    print(test_results)
     sys.exit(test_results[0])
