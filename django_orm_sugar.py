@@ -37,11 +37,11 @@ class QFactory(object):
 
     def __getitem__(self, item):
         """
-        >>> Q.user.tags[0] == 'My Tag'
-        <Q: (AND: ('user__tags__0', 'My Tag'))>
+        >>> Q.user.tags[0].name == 'My Tag'
+        <Q: (AND: ('user__tags__0__name', 'My Tag'))>
 
-        >>> Q.user.tags[0:1] == "My Tag"
-        <Q: (AND: ('user__tags__0_1', 'My Tag'))>
+        >>> Q.user.tags[0:1].name == "My Tag"
+        <Q: (AND: ('user__tags__0_1__name', 'My Tag'))>
 
         """
         if isinstance(item, slice):
