@@ -32,7 +32,8 @@ q = Q(user__profile__common_bucket__seq_count=1)
 ```
 
 ## Queries
-General comparison operators generate related Q objects:  
+### Comparison operators
+General comparison operators generate related Q objects:
 ```python
 >>> Q.user.username == 'Bender Rodriguez'
 Q(user__username='Bender Rodriguez')
@@ -50,7 +51,7 @@ Q(user__age__lt=7)
 Q(user__age__lte=7)
 ```
 
-Filter by null (or not-null) fields
+### Filter by null (or not-null) fields
 ```python
 >>> Q.user.favorite_movie.is_null()
 Q(user__favorite_movie__isnull=True)
@@ -59,19 +60,19 @@ Q(user__favorite_movie__isnull=True)
 Q(user__favorite_movie__isnull=False)
 ```
 
-Filter by fields matching a given list
+### Filter by fields matching a given list
 ```python
 >>> Q.user.id.in_list([1, 2, 3])
 Q(user__id__in=[1, 2, 3])
 ```
    
-Filter by fields in range
+### Filter by fields in range
 ```python
 >>> Q.user.id.in_range(7, 10)
 Q(user__id__lte=7) & Q(user__id__gte=10)
 ```
     
-Common Django filter shortcuts
+### Common Django filter shortcuts
 ```python
 >>> Q.user.username.iexact('Bender Rodriguez')
 Q(user__username__iexact='Bender Rodriguez')
@@ -86,7 +87,21 @@ Q(user__username__contains='Rodriguez')
 Q(user__username__icontains='Rodriguez')
 ```
 
-Get query path - useful for order_by, select_related and other calls,
+### Index and slices queries
+Used by PostgreSQL ArrayField or JSONField
+```python
+>>> Q.data.owner.other_pets[0].name='Fishy'
+Q(data__owner__other_pets__0__name='Fishy')
+
+>>> Q.tags[0] == 'thoughts'
+Q(tags__0='thoughts')
+
+>>> Q.tags[0:2].contains(['thoughts']) 
+Q(tags__0_2__contains=['thoughts'])
+```
+
+### Get query path as string with underscores
+It's useful for order_by, select_related and other calls,
 which expect query path as string
 ```python
 >>> Q.user.username.get_path()
@@ -95,8 +110,9 @@ which expect query path as string
 
 ## Extending
 
-You can register your custom helpers. Let's say you need to create
-in_exc_range() helper, which will perform exclusive range filtering.
+It's possible to register custom helpers. Let's say it's required to
+create **in_exc_range()** helper, which will perform exclusive range
+filtering.
   
 
 ```python
@@ -115,8 +131,9 @@ def exclusive_in_range_helper(query_path, min_value, max_value):
     return q_gt & q_lt
 ```
 
-The actual function name doesn't matter, only passed name to decorator does.
-Now you can use newly registered helper:
+The actual function name doesn't matter, only passed name to decorator
+does.
+Now a newly registered helper can be used:
 ```python
 >>> Q.user.registration_date.in_exc_range(from_date, to_date)
 Q(registration_date__gt=from_date) & Q(registration_date__lt=to_date)
