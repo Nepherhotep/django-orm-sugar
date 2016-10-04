@@ -33,7 +33,11 @@ class QFactory(object):
         """
         :return: QFactory()
         """
-        return QFactory(name=item, parent=self)
+        # Made module doctestable, otherwise doctest runner failed into infinite loop
+        if item == '__wrapped__':
+            raise AttributeError('No attribute __wrapped__')
+        else:
+            return QFactory(name=item, parent=self)
 
     def __getitem__(self, item):
         """
