@@ -51,6 +51,9 @@ class QFactory(object):
 
     def __eq__(self, value):
         """
+        >>> Q.username == 'Bender Rodriguez'
+        <Q: (AND: ('username', 'Bender Rodriguez'))>
+
         >>> Q.user.username == 'Bender Rodriguez'
         <Q: (AND: ('user__username', 'Bender Rodriguez'))>
         """
@@ -98,14 +101,22 @@ class QFactory(object):
         >>> Q(user__age__lte=7)
         <Q: (AND: ('user__age__lte', 7))>
 
+        >>> Q.article.tags.overlap(['holiday', 'x-mas'])
+        <Q: (AND: article__tags__overlap, ['holiday', 'x-mas'])>
+
+        >>> tags = Q.article.tags
+        >>> tags.overlap(['holiday', 'x-mas'])
+        <Q: (AND: article__tags__overlap, ['holiday', 'x-mas'])>
+
         """
-        helper = self._helpers.get(self._name)
-        if helper:
-            if self._parent:
+        if self._parent:
+            helper = self._helpers.get(self._name)
+            if helper:
                 return helper(self._parent.get_path(), *args, **kwargs)
             else:
-                raise RuntimeError("Queried field not specified")
+                return QNode(self.get_path(), *args, **kwargs)
         else:
+            # just create usual Q object
             return QNode(*args, **kwargs)
 
     def is_null(self, value=True):
