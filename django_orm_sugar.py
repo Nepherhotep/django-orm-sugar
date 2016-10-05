@@ -22,7 +22,26 @@ class QFactory(object):
     >>> Q(user__username='Bender')
     <Q: (AND: ('user__username', 'Bender'))>
 
+    Different usage cases:
+    >>> Q.user.username.iexact('Bender Rodriguez')
+    <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
+
+    >>> Q.user.username.exact('Bender Rodriguez')
+    <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
+
+    >>> Q.user.username.contains('Rodriguez')
+    <Q: (AND: ('user__username__contains', 'Rodriguez'))>
+
+    >>> Q.user.username.icontains('Rodriguez')
+    <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
+
+    >>> Q.user.tags[0:1].overlap(['item1', 'item2'])
+    <Q: (AND: ('user__tags__0_1__overlap', ['item1', 'item2']))>
+
+    >>> Q.data.contained_by({'breed': 'collie'})
+    <Q: (AND: ('data__contained_by', {'breed': 'collie'}))>
     """
+
     _helpers = {}
 
     def __init__(self, name='', parent=None):
@@ -98,7 +117,7 @@ class QFactory(object):
         """
         return QNode(**{'{}__lte'.format(self.get_path()): value})
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, args=tuple(), **kwargs):
         """
         Lookup custom helpers, otherwise keep old-style Q usage
 
@@ -106,11 +125,11 @@ class QFactory(object):
         <Q: (AND: ('user__age__lte', 7))>
 
         >>> Q.article.tags.overlap(['holiday', 'x-mas'])
-        <Q: (AND: article__tags__overlap, ['holiday', 'x-mas'])>
+        <Q: (AND: ('article__tags__overlap', ['holiday', 'x-mas']))>
 
         >>> tags = Q.article.tags
         >>> tags.overlap(['holiday', 'x-mas'])
-        <Q: (AND: article__tags__overlap, ['holiday', 'x-mas'])>
+        <Q: (AND: ('article__tags__overlap', ['holiday', 'x-mas']))>
 
         """
         if self._parent:
@@ -118,10 +137,10 @@ class QFactory(object):
             if helper:
                 return helper(self._parent.get_path(), *args, **kwargs)
             else:
-                return QNode(self.get_path(), *args, **kwargs)
+                return QNode(**{self.get_path(): args})
         else:
             # just create usual Q object
-            return QNode(*args, **kwargs)
+            return QNode(**kwargs)
 
     def is_null(self, value=True):
         """
@@ -158,41 +177,13 @@ class QFactory(object):
         """
         return (self <= min_value) & (self >= max_value)
 
-    def iexact(self, value):
-        """
-        >>> QFactory().user.username.iexact('Bender Rodriguez')
-        <Q: (AND: ('user__username__iexact', 'Bender Rodriguez'))>
-        """
-        return QNode(**{'{}__iexact'.format(self.get_path()): value})
-
-    def exact(self, value):
-        """
-        >>> QFactory().user.username.exact('Bender Rodriguez')
-        <Q: (AND: ('user__username__exact', 'Bender Rodriguez'))>
-        """
-        return QNode(**{'{}__exact'.format(self.get_path()): value})
-
-    def contains(self, s):
-        """
-        >>> QFactory().user.username.contains('Rodriguez')
-        <Q: (AND: ('user__username__contains', 'Rodriguez'))>
-        """
-        return QNode(**{'{}__contains'.format(self.get_path()): s})
-
-    def icontains(self, s):
-        """
-        >>> QFactory().user.username.icontains('Rodriguez')
-        <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
-        """
-        return QNode(**{'{}__icontains'.format(self.get_path()): s})
-
     def get_path(self):
         """
         Get Django-compatible query path
 
         >>> QFactory().user.username.get_path()
         'user__username'
-
+        
         """
         if self._parent is not None:
             parent_param = self._parent.get_path()
