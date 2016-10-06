@@ -107,7 +107,7 @@ Q(tags__0_2__contains=['thoughts'])
 ```
 
 ### Passing multiple arguments
-It's possible to pass multiple arguments, they will be converted to tuple in final expression.
+It's possible to pass multiple arguments, they will be converted to tuple in final expression
 ```python
 >>> Q.user.create_datetime.range(d1, d2)
 Q(user__create_datetime__range=(d1, d2))
