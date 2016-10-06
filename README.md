@@ -107,12 +107,14 @@ Q(tags__0_2__contains=['thoughts'])
 ```
 
 ### Passing multiple arguments
-It's possible to pass multiple arguments, they will be converted to tuple in final expression
+It's possible to pass multiple arguments, they will be converted to tuple
+in final expression.
 ```python
 >>> Q.user.create_datetime.range(d1, d2)
 Q(user__create_datetime__range=(d1, d2))
 ```
-However, passing them as tuple is also allowed as a single argument will be passed to lookup expression without any modifications
+However, passing them as tuple is also allowed as a single argument will
+be passed to lookup expression without any modifications.
 
 ### Get query path as string with underscores
 It's useful for order_by, select_related and other calls,
