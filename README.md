@@ -71,13 +71,7 @@ Q(user__favorite_movie__isnull=False)
 >>> Q.user.id.in_list([1, 2, 3])
 Q(user__id__in=[1, 2, 3])
 ```
-   
-### Filter by fields in range
-```python
->>> Q.user.id.in_range(7, 10)
-Q(user__id__lte=7) & Q(user__id__gte=10)
-```
-    
+
 ### Common Django filter shortcuts
 ```python
 >>> Q.user.username.iexact('Bender Rodriguez')
