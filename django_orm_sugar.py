@@ -35,11 +35,19 @@ class QFactory(object):
     >>> Q.user.username.icontains('Rodriguez')
     <Q: (AND: ('user__username__icontains', 'Rodriguez'))>
 
+    Passing items as multiple arguments
+    >>> Q.user.tags[0:1].overlap('item1', 'item2')
+    <Q: (AND: ('user__tags__0_1__overlap', ('item1', 'item2')))>
+
+    Passing items as a single list argument
     >>> Q.user.tags[0:1].overlap(['item1', 'item2'])
     <Q: (AND: ('user__tags__0_1__overlap', ['item1', 'item2']))>
 
     >>> Q.data.contained_by({'breed': 'collie'})
     <Q: (AND: ('data__contained_by', {'breed': 'collie'}))>
+
+    >>> Q.user.created.range('start date', 'end date')
+    <Q: (AND: ('user__created__range', ('start date', 'end date')))>
     """
 
     _helpers = {}
@@ -117,19 +125,19 @@ class QFactory(object):
         """
         return QNode(**{'{}__lte'.format(self.get_path()): value})
 
-    def __call__(self, args=tuple(), **kwargs):
+    def __call__(self, *args, **kwargs):
         """
         Lookup custom helpers, otherwise keep old-style Q usage
 
         >>> Q(user__age__lte=7)
         <Q: (AND: ('user__age__lte', 7))>
 
-        >>> Q.article.tags.overlap(['holiday', 'x-mas'])
-        <Q: (AND: ('article__tags__overlap', ['holiday', 'x-mas']))>
+        >>> Q.article.tags.overlap('holiday', 'x-mas')
+        <Q: (AND: ('article__tags__overlap', ('holiday', 'x-mas')))>
 
         >>> tags = Q.article.tags
-        >>> tags.overlap(['holiday', 'x-mas'])
-        <Q: (AND: ('article__tags__overlap', ['holiday', 'x-mas']))>
+        >>> tags.overlap('holiday', 'x-mas')
+        <Q: (AND: ('article__tags__overlap', ('holiday', 'x-mas')))>
 
         """
         if self._parent:
@@ -137,7 +145,12 @@ class QFactory(object):
             if helper:
                 return helper(self._parent.get_path(), *args, **kwargs)
             else:
-                return QNode(**{self.get_path(): args})
+                # create Q object based on full path
+                if len(args) == 1:
+                    value = args[0]
+                else:
+                    value = args
+                return QNode(**{self.get_path(): value})
         else:
             # just create usual Q object
             return QNode(**kwargs)
