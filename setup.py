@@ -16,13 +16,11 @@ setup(
     url="https://github.com/Nepherhotep/django-orm-sugar",
     install_requires=['django'],
     classifiers=["Framework :: Django :: 1.8",
+                 "Framework :: Django :: 1.9",
+                 "Framework :: Django :: 1.10",
                  "Development Status :: 5 - Production/Stable",
 
                  "Programming Language :: Python :: 2.7",
-                 "Programming Language :: Python :: 3.0",
-                 "Programming Language :: Python :: 3.1",
-                 "Programming Language :: Python :: 3.2",
-                 "Programming Language :: Python :: 3.3",
                  "Programming Language :: Python :: 3.4",
                  "Programming Language :: Python :: 3.5"]
 )
