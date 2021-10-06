@@ -3,6 +3,7 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
+  - "3.8"
 # TODO: fix doctest freezing in Python 3.5
 
 # command to install dependencies
@@ -13,7 +14,7 @@ install:
 # setup different django versions
 env:
   - DJANGO_VERSION=1.8
-  - DJANGO_VERSION=1.9
+  - DJANGO_VERSION=3.2.8
   - DJANGO_VERSION=1.10
   - DJANGO_VERSION=1.10.1
   - DJANGO_VERSION=1.10.2
